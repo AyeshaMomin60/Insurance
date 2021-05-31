@@ -1,0 +1,13 @@
+.nav-link {
+    cursor: pointer;
+    border-radius: 8px;
+    color: white;
+  }
+  .h1{
+      align-items: center;
+      color:crimson;
+
+  }
+  body {
+      background-color:darkturquoise;
+    }
