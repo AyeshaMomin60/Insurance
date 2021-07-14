@@ -20,15 +20,19 @@
       <tr><b>Details:</b>{{policy.details}}</tr>
       <tr><b>Deductible: </b> {{ policy.deductible | currency: "IND" }}</tr>
       <hr>
-      <tr> <button class="btn btn-info  text-uppercase"  [routerLink]="['/edit-policy',policy.planId]">Update</button>&nbsp;&nbsp;
-        <button class="btn btn-info  text-uppercase"  (click)="deletePolicy(policy.planId)">Delete</button>
+      <tr>
+       <button class="btn btn-info  text-uppercase"  [routerLink]="['/edit-policy',policy.planId]">Update</button>&nbsp;
+      <button class="btn btn-info  text-uppercase"  (click)="deletePolicy(policy.planId)">Delete</button>&nbsp;    
+      <button class="btn btn-info  text-uppercase" [routerLink]="['/show-user-details',policy.planId] ">View User Details</button>&nbsp;
+      <b> <button class="btn btn-info  text-uppercase" (click)="addPolicy(policy.planId)">Enroll into Plan</button></b>
+     
       </tr>
     </table>           
     </div>
     
     <button class="btn btn-info  text-uppercase" [routerLink]="['/create-policy']">Create Policy</button>
     &nbsp;&nbsp;
-    <!-- <button class="btn btn-info  text-uppercase" [routerLink]="['/home']">Home</button> -->
+   
     
     <div></div>
     <hr>

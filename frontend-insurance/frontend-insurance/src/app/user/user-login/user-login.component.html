@@ -18,42 +18,54 @@
                 </div>
                 <p class="login-card-description">Sign into your account</p>
                 <form #custForm="ngForm" (submit)="getUserByEmail()" > 
-                  <small  class="small text-danger">
-                   {{errormsg}}
-                </small>
+                  <!--small  class="small text-danger">
+                   {{successMsg}}
+                </small-->
                     <div class="form-group">
                       <label for="email" class="sr-only">email</label>
                       <input type="email"
+                      pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+                      [class.is-invalid]="email.invalid && email.touched "
                        name="email" 
                        id="email" 
                        class="form-control"
                         placeholder="Email"
                         [(ngModel)]="customer.email"
                         #email="ngModel" 
-                        required>
-                        <!-- <small *ngIf="mobile.dirty && mobile.errors?.required" class="small text-danger">
-                            Mobile Number is mandatory
-                            </small>
-                            <small *ngIf=" mobile.errors?.pattern" class="small text-danger">
+                        required/>
+                        <div *ngIf="email.invalid && email.touched">
+                          <small class="text-danger" *ngIf="email.errors?.required">Email is required</small>
+                          <small class="text-danger" *ngIf="email.errors?.pattern">Email must be in required format</small>
+                        </div>
+                            <!--small *ngIf=" email.errors?.pattern" class="small text-danger">
                                 Mobile number must be 10 digits
                             </small> -->
                     </div>
                     <div class="form-group mb-4">
-                      <label for="password" class="sr-only">Password</label>
+                      <label for="password" 
+                      class="sr-only">Password</label>
                       <input type="password"
+                      pattern = "[a-zA-Z]{3,}"
+                      [class.is-invalid]="password.invalid && password.touched"
                        name="password" 
                        id="password" 
                        class="form-control"
                         placeholder="*******"
                         required
                         [(ngModel)]="customer.password"
-                        #password="ngModel">
-                        <small *ngIf="password.dirty && password.errors?.required" class="small text-danger">
-                            password is mandatory
-                            </small>
+                        #password="ngModel"
+                        />
+                        <small class="text-danger" *ngIf="password.errors?.required">Password is required</small>
                     </div>
-                    <input name="login" id="login" class="btn btn-block login-btn mb-4" type="submit" value="Login" [disabled]="!custForm.valid">
+                   
+                    <input name="login" id="login" class="btn btn-block login-btn mb-4"
+                     type="submit" value="Login" [disabled]="!custForm.valid">
                   </form>
+                  <small  class="small text-danger">
+                    {{successMsg}}
+                 </small>
+                 <small  class="small text-danger"> {{errormsg}}</small>
+                  
                   <a href="#!" class="forgot-password-link">Forgot password?</a>
                   <p class="login-card-footer-text">Don't have an account? <a [routerLink]="['/user-registration']" class="text-reset">Register here</a></p>
                   <nav class="login-card-footer-nav">

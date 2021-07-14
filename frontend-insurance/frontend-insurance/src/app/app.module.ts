@@ -10,7 +10,6 @@ import { AdminRegistrationComponent } from './admin/admin-registration/admin-reg
 import { UserRegistrationComponent } from './user/user-registration/user-registration.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-//import { UserLoginComponent } from './user/user-login/user-login.component';
 import { AdminLoginComponent } from './admin/admin-login/admin-login.component';
 import { EditPolicyComponent } from './admin/policy/edit-policy/edit-policy.component';
 import { RouterModule } from '@angular/router';
@@ -21,6 +20,10 @@ import { CreatePolicyComponent } from './admin/policy/create-policy/create-polic
 import { FilterPipe } from './Pipes/filter.pipe';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { ViewEnrollPolicyComponent } from './user/view-enroll-policy/view-enroll-policy.component';
+import { ViewAllUserComponent } from './user/view-all-user/view-all-user.component';
+import { ShowUserBasedOnPolicyComponent } from './admin/show-user-based-on-policy/show-user-based-on-policy.component';
+import { AuthguardServiceService } from './service/authguard-service.service';
+import {routes} from './app-routing.module';
 
 
 
@@ -29,21 +32,18 @@ import { ViewEnrollPolicyComponent } from './user/view-enroll-policy/view-enroll
     AppComponent,
     NavbarComponent,
     HomeComponent,
-    //UserComponent,
-    //AdminComponent,
     UserRegistrationComponent,
     AdminRegistrationComponent,
     UserLoginComponent,
     AdminLoginComponent,
-    //PolicyComponent,
     EditPolicyComponent,
     ListPolicyComponent,
-  
     UserShowPolicyComponent,
     CreatePolicyComponent,
     FilterPipe,
-    ViewEnrollPolicyComponent
-  
+    ViewEnrollPolicyComponent,
+    ViewAllUserComponent,
+    ShowUserBasedOnPolicyComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,13 +52,16 @@ import { ViewEnrollPolicyComponent } from './user/view-enroll-policy/view-enroll
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule,
-    Ng2SearchPipeModule
+    Ng2SearchPipeModule,
+    RouterModule.forRoot(routes)
     
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
   ],
-  providers: [],
+  providers: [
+    AuthguardServiceService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -14,6 +14,7 @@ sessionValue:any;
   isLoggedIn=false;
   userName:any;
   userId: any;
+  isSuperAdmin=false;
  
   constructor(
     public authService :UserAuthenticationService,
@@ -25,6 +26,9 @@ sessionValue:any;
   }​​​​​​​​
   ngOnInit(): void {​​​​​​​​
    this.userName=this.authService.getUserName();
+   if(this.authService.getUserName()=="Ayesha"){
+    this.isSuperAdmin=true;
+    }
    console.log(this.userName);
   }​​​​​​​​
   
@@ -35,6 +39,10 @@ sessionValue:any;
     this.isLoggedIn=false;
   }
 
-  
+  superAdmin(){
+    if(this.authService.getUserName()=='Ayesha'){
+      this.isSuperAdmin=true;
+      }
+  }
 
 }

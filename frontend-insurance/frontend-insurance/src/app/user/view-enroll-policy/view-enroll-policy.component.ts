@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Policy } from 'src/app/admin/policy/Policy';
 import { User } from 'src/app/model/user';
+import { NotifacationServiceService } from 'src/app/service/notifacation-service.service';
+
 import { UserAuthenticationService } from 'src/app/service/user-authentication.service';
 import { PolicyService } from '../policy.service';
 import { UserService } from '../user.service';
@@ -26,6 +28,7 @@ export class ViewEnrollPolicyComponent implements OnInit {
     private policyService:PolicyService,
     private http: HttpClient,
     private route: ActivatedRoute,
+    private notifyService:NotifacationServiceService,
    private authService:UserAuthenticationService) {
 
    }
@@ -53,13 +56,16 @@ export class ViewEnrollPolicyComponent implements OnInit {
     console.log
     this.policyService.policyByUserId(userId).subscribe(
       (res:any)=>{
+        this.notifyService.showSuccessWithTimeout("Policy Added Successfully","Notification","2000");
       console.log(res)
       this.allPolicy=res;
       
       },
-      error=>{
-         console.log(error);
-      });
+         error=>{
+          console.log(error)
+          this.notifyService.showErrorWithTimeout("Policy Already Present","Notification","2000")
+        }
+      );
 
   }
   

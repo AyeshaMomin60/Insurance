@@ -3,7 +3,9 @@ export interface User{
     name: string,
     mobile: string,
     email:string,
-    password: string
+    password: string,
+    status: string,
+    role:string
 
     
 }

@@ -12,13 +12,16 @@ export class UserRegistrationComponent implements OnInit {
 
   allUser: any;
   successMsg : any;
+  //roleList: any = ['User', 'Admin']
 
   user: User={
     userId:90,
     name:'',
     mobile:'',
     email:'',
-    password:''
+    password:'',
+    status: '',
+    role:''
   }
  
   
@@ -42,9 +45,9 @@ export class UserRegistrationComponent implements OnInit {
    
   this.UserService.addUser(user).subscribe(
     (repsonse) => {
-      console.log(repsonse);
-      this.allUser = repsonse;
+      console.log(repsonse);  
       this.successMsg = this.successMsg + " You have successfully registered with login email" +user.email+ "password:" +user.password;
+      this.allUser = repsonse;
       this.router.navigate(['/user-login'])
     }
   );

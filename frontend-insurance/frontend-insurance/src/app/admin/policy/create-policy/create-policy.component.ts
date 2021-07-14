@@ -3,6 +3,8 @@ import { Policy } from '../Policy';
 import { PolicyService } from '../policy.service';
 import { Router } from '@angular/router';
 import { UserAuthenticationService } from 'src/app/service/user-authentication.service';
+import { NotifacationServiceService } from 'src/app/service/notifacation-service.service';
+
 
 @Component({
   selector: 'app-create-policy',
@@ -24,7 +26,8 @@ export class CreatePolicyComponent implements OnInit {
  
   
   constructor(private UserService: PolicyService,
-    userAuth:UserAuthenticationService,
+    private userAuth:UserAuthenticationService,
+    private notifyService:NotifacationServiceService,
     private router: Router) {}
 
   ngOnInit(): void {
@@ -45,10 +48,15 @@ export class CreatePolicyComponent implements OnInit {
   this.UserService.createPolicy(policy).subscribe(
     (repsonse) => {
       console.log(repsonse);
-      alert("Policy Created Successfully!!");
+      this.notifyService.showSuccessWithTimeout("New Policy Created Successfully","Notification","2000");
+      //alert("Policy Created Successfully!!");
       this.allUser = repsonse;
       this.successMsg = " Policy Created Successfully. ";
-      this.router.navigate(['/list-policy']);
+      this.router.navigate(["/list-policy"]);
+    },
+    error=>{
+      console.log(error)
+      this.notifyService.showErrorWithTimeout("Policy is not Created","Notification","2000")
     }
   );
   }

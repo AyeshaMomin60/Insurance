@@ -1,54 +1,46 @@
 package com.cg.policy.Insurance.Policy.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * @author Aymomin This class includes declaration of parameters of
+ *         EnrollmentRequest class, default constructor, parameterized
+ *         constructors, getter and setter methods of parameters and toString
+ *         method to display.
+ */
 @Entity
 @Table(name = "EnrollmentTable")
 public class EnrollmentRequest {
 
-	
 	@Id
-	@GeneratedValue(
-	    strategy = GenerationType.SEQUENCE,
-	    generator = "seq_post"
-	)
-	@SequenceGenerator(
-	    name = "seq_post",
-	    allocationSize = 1
-	)
+	@GeneratedValue
+	@Column(name = "EnrollmentId")
 	private int enrollmentId;
-	
-//	@Id
-//	@GeneratedValue
-//	@Column(name = "EnrollmentId")
-//	private int enrollmentId;
-	
+
 	@OneToOne
 	@JoinColumn(name = "userId")
 	private User user;
 
-	
 	@OneToOne
 	@JoinColumn(name = "planId")
-	private Plan plan;
+	private Policy policy;
 
 	public EnrollmentRequest() {
 		super();
-		
+
 	}
 
-	public EnrollmentRequest(int enrollmentId, User user, Plan plan) {
+	public EnrollmentRequest(int enrollmentId, User user, Policy policy) {
 		super();
 		this.enrollmentId = enrollmentId;
 		this.user = user;
-		this.plan = plan;
+		this.policy = policy;
 	}
 
 	public int getEnrollmentId() {
@@ -67,19 +59,17 @@ public class EnrollmentRequest {
 		this.user = user;
 	}
 
-	public Plan getPlan() {
-		return plan;
+	public Policy getPolicy() {
+		return policy;
 	}
 
-	public void setPlan(Plan plan) {
-		this.plan = plan;
+	public void setPolicy(Policy policy) {
+		this.policy = policy;
 	}
 
 	@Override
 	public String toString() {
-		return "EnrollmentRequest [enrollmentId=" + enrollmentId + ", user=" + user + ", plan=" + plan + "]";
+		return "EnrollmentRequest [enrollmentId=" + enrollmentId + ", user=" + user + ", policy=" + policy + "]";
 	}
 
-	
-	
 }

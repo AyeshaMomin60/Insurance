@@ -7,6 +7,8 @@ import { UserAuthenticationService } from 'src/app/service/user-authentication.s
 import { UserService } from '../user.service';
 import { planEnrollment } from '../planEnrollment';
 import { Enroll } from '../enroll';
+import { NotifacationServiceService } from 'src/app/service/notifacation-service.service';
+//import { NotifacationServiceService } from 'src/app/service/notifacation-service.service';
 @Component({
   selector: 'app-user-show-policy',
   templateUrl: './user-show-policy.component.html',
@@ -44,6 +46,7 @@ export class UserShowPolicyComponent implements OnInit {
     private policyService:PolicyService,
     private http: HttpClient,
     private route: ActivatedRoute,
+    private notifyService:NotifacationServiceService,
    private authService:UserAuthenticationService) { }
 
 
@@ -64,8 +67,13 @@ export class UserShowPolicyComponent implements OnInit {
       this.userService.enrollment(this.userInfo).subscribe(
         (repsonse:any) => {
           console.log(repsonse);
+          this.notifyService.showSuccessWithTimeout("Policy Enroll Successfully","Notification","2000");
           this.allUser = repsonse;
-          alert("Policy Enroll Successfully");
+          //alert("Policy Enroll Successfully");
+        },
+        error=>{
+          console.log(error)
+          this.notifyService.showErrorWithTimeout("User Already taken Policy","Notification","2000")
         }
       );
       }

@@ -13,7 +13,7 @@ export class PolicyService {
   allPolicy : any= [];
   plan:Policy;
 
-  private baseUrl = 'http://localhost:8080/backend-insurance/api';
+  private baseUrl = 'http://localhost:8001/backend-insurance/api';
 
   constructor(private http: HttpClient) { }
 
@@ -33,12 +33,14 @@ showAllPlans(){
     return this.http.post(`${this.baseUrl}/CreatePlan`, policy);
   }
 
- 
 
+  // public deletePlan(planId:number) {
+  //   return this.http.put(`${this.baseUrl}/DeletePlan/`+planId);
+  //    }
 
-  public deletePlan(planId:number) {
-    return this.http.delete(`${this.baseUrl}/DeletePlan/`+planId);
-     }
+     deletePlan(id: number): Observable<any>{
+      return this.http.put(`${this.baseUrl}/DeletePlan/${id}`,{ responseType: 'text'});
+    }
 
 
   updatePolicy(policy:UpdatePolicy):Observable<object>
@@ -47,7 +49,9 @@ showAllPlans(){
        return this.http.put(`${this.baseUrl}/updatePlan`,policy);
       }
 
-  
+      findUserByPolicy(planId){
+        return this.http.get(`${this.baseUrl}/ShowPlanTakenByUser/`+planId)
+      }
 
 //   showAllPlans(){
     

@@ -20,21 +20,18 @@
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
-
 	<dependencies>
-	
-	
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
-    
-</dependency>
 
-	
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
-			
+
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -43,6 +40,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
 		<dependency>
@@ -124,11 +126,24 @@
 			<artifactId>modelmapper</artifactId>
 			<version>2.3.8</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sonarsource.sonarlint.core</groupId>
+			<artifactId>sonarlint-core</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sonarsource.sonarlint.core</groupId>
+			<artifactId>sonarlint-core</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
 
 
-		<!-- dependency> <groupId>com.insuranceAngularParent</groupId> <artifactId>frontend-insurance</artifactId> 
-			<version>${project.version}</version> <type>war</type> <scope>runtime</scope> 
-			</dependency -->
 	</dependencies>
 
 

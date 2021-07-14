@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, NumberValueAccessor, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotifacationServiceService } from 'src/app/service/notifacation-service.service';
 import { Policy } from '../Policy';
 import { PolicyService } from '../policy.service';
 
@@ -20,7 +21,9 @@ export class EditPolicyComponent implements OnInit {
   constructor(private route: ActivatedRoute, 
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private formBuilder:FormBuilder, private  policyService:PolicyService) { }
+    private formBuilder:FormBuilder,
+    private notifyService:NotifacationServiceService,
+     private  policyService:PolicyService) { }
  
   ngOnInit(): void {
     // console.log(+this.route.snapshot.params['planId']);
@@ -34,7 +37,6 @@ export class EditPolicyComponent implements OnInit {
         this.policyForm.get('cost').setValue(this.policy.cost);
         this.policyForm.get('deductible').setValue(this.policy.deductible);
         this.policyForm.get('details').setValue(this.policy.details);
-        // this.router.navigate(['/list-policy']);
         
       }
     )
@@ -68,11 +70,15 @@ export class EditPolicyComponent implements OnInit {
     this.policyForm.value.planId = this.route.snapshot.params['planId']
     this.policyService.updatePolicy(this.policyForm.value).subscribe(
       response =>{
+        this.notifyService.showSuccessWithTimeout("Policy Updated Successfully","Notification","2000");
         console.log('Success!', response),
-        alert("Updated Successfully!")
+        //alert("Updated Successfully!")
         this.router.navigate(['/list-policy']);
       },
-      error=>console.log(error)
+      error=>{
+        console.log(error)
+        this.notifyService.showErrorWithTimeout("Policy is not Updated","Notification","2000")
+      }
       
     );
   }

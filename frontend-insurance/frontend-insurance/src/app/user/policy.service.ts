@@ -9,7 +9,7 @@ export class PolicyService {
 
   allPolicy: any = [];
 
-  private baseUrl = 'http://localhost:8080/backend-insurance/api';
+  private baseUrl = 'http://localhost:8001/backend-insurance/api';
   constructor(private http: HttpClient) { }
 
 

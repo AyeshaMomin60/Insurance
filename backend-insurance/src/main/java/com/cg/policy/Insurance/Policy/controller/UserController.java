@@ -1,17 +1,17 @@
 package com.cg.policy.Insurance.Policy.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.security.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,194 +20,206 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cg.policy.Insurance.Policy.InsurancePolicyApplication;
 import com.cg.policy.Insurance.Policy.exception.InsuranceException;
 import com.cg.policy.Insurance.Policy.model.EnrollmentRequest;
-import com.cg.policy.Insurance.Policy.model.Login;
-import com.cg.policy.Insurance.Policy.model.Plan;
-import com.cg.policy.Insurance.Policy.model.ResponseModelOfUser;
+import com.cg.policy.Insurance.Policy.model.Policy;
 import com.cg.policy.Insurance.Policy.model.User;
 import com.cg.policy.Insurance.Policy.service.PlanService;
 import com.cg.policy.Insurance.Policy.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
 
+/**
+ * @author aymomin
+ *
+ */
 @RestController
 @RequestMapping(path = "/api")
 @CrossOrigin
 public class UserController {
-	
+
+	Logger logger = LoggerFactory.getLogger(UserController.class);
+
 	@Autowired
-	UserService service;
-	
+	UserService userService;
+
 	@Autowired
 	PlanService planService;
-	
+
+	/**
+	 * 
+	 * @param user
+	 * @return This method return {@link User} with their respective Details
+	 * @throws InsuranceException
+	 */
 	@PostMapping("/addUser")
-	public ResponseEntity<User> registerUser( @RequestBody User user) throws InsuranceException {
-		
-	String email=user.getEmail();
-	
-	if(email!=null && !"".equals(email)) {
-		User u=service.fetchUserByEmail(email);
-		if(u!=null) {
-			throw new InsuranceException("User Already Exsist");
-		}
-	}
-	User result = service.addUser(user);
-		//String userName = organization.getOrgName().substring(0, 3) + result.getOrgId();
-		Login login = new Login(user.getUserId(),user.getMobile(), user.getPassword(),'U');
-		Login resultLogin = service.addLogin(login);
-		
-		//logger.info("New Organization added successfully");
-		return new ResponseEntity<>(result, HttpStatus.OK);
-	}
-	
-	
 
-	@ApiOperation(value = "get login record by username and password", response = User.class)
-	@GetMapping("/user/login/{email}/{password}")
-	public ResponseEntity<User> getLogin(@PathVariable("email") String email, @PathVariable("password") String password) throws InsuranceException {
-		User result=service.getLoginRecord(email,password);
-		System.out.println("Email:"+email);
-		System.out.println("password="+password);
-		System.out.println("details="+result);
-		if(result==null) {
-			throw new InsuranceException("not found");
-		}
-		return new ResponseEntity<>(result,HttpStatus.OK);
+	public ResponseEntity<User> registerUser(@RequestBody User user) throws InsuranceException {
+		return userService.addUser(user);
 	}
 
-	@ApiOperation(value = "View Plans", response = Plan.class)
-	@GetMapping("/showAllPlans")
-	public ResponseEntity<List<Plan>> showAllPlans() {
-		 List<Plan> list =  planService.getAllPlan();
-		 return  new ResponseEntity<>(list, HttpStatus.OK);
-		
+	/**
+	 * This method return {@link User}
+	 * 
+	 * @param Email and Password
+	 * @return {@link User}
+	 * @throws InsuranceException 
+	 */
+	@PostMapping(value = "/login")
+	public ResponseEntity<?> userLogin(@RequestBody User loginRequest, HttpServletRequest request,
+			HttpServletResponse response) throws InsuranceException {
+		User userDetails = userService.getLoginRecord(loginRequest.getEmail(), loginRequest.getPassword());
+		String GeneratedToken = userService.userLogin(loginRequest, response);
+		if (GeneratedToken != null) {
+			if (userDetails != null && ((userDetails.getRole().equals("User") ||userDetails.getRole().equals("Admin")
+					|| userDetails.getRole().equals("SUPER-ADMIN")) && userDetails.getStatus().equalsIgnoreCase("Active"))) {
+			return new ResponseEntity<>(userDetails,HttpStatus.OK);
+			}
+			else {
+				throw new InsuranceException("No User Present"); 
+			}
 			
-		}
-	
-	
-	
-	@GetMapping(value="/viewUser/{userEmail}",produces=MediaType.APPLICATION_JSON_VALUE,consumes =MediaType.APPLICATION_JSON_VALUE)
-    public User viewUserbyEmail(@PathVariable(value = "userEmail") String email) {
+		} 
+		else
+			return new ResponseEntity<>("{Invalid user Details}", HttpStatus.BAD_REQUEST);
 		
-        User user = service.viewUserby(email);
-        System.out.println("Email:"+email);
-       System.out.println("user=" +user);
-            return user;
-    }
-//	@GetMapping(value="/viewUserbyEmail/{email}",produces=MediaType.APPLICATION_JSON_VALUE,consumes =MediaType.APPLICATION_JSON_VALUE)
-//	ResponseEntity<ResponseModelOfUser> viewUserbyEmail(@PathVariable(value="email") String email) throws Exception {
-//		User user = service.viewUserbyEmail(email);
-//		System.out.println("user"+user.getName()+user.getMobile()+user.getPassword()+user.getUserId());
-//      System.out.println("user=" +user);
-//      ModelMapper modelmapper=new ModelMapper();
-//      modelmapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-//      
-//      ResponseModelOfUser createResponseModel=modelmapper.map(user,ResponseModelOfUser.class );
-//       //service.viewUserbyEmail(email)
-//       if (user == null) {
-//           throw new InsuranceException("NOT FOUND");
-//       }
-//       else {
-//           return ResponseEntity.status(HttpStatus.CREATED).body(createResponseModel);
-//           }
-//   
+	}
+
+//	/**
+//	 * This method return {@link User}
+//	 * 
+//	 * @param Email and Password
+//	 * @return {@link User}
+//	 */
+//
+//	@ApiOperation(value = "get login record by username and password", response = User.class)
+//	@GetMapping("/user/login/{email}/{password}")
+//
+//	public ResponseEntity<User> getLogin(@PathVariable("email") String email, @PathVariable("password") String password)
+//			throws InsuranceException {
+//		User userDetails = userService.getLoginRecord(email, password);
+//		if (userDetails != null && ((userDetails.getRole().equals("User") ||userDetails.getRole().equals("Admin")
+//				|| userDetails.getRole().equals("SUPER-ADMIN")) && userDetails.getStatus().equalsIgnoreCase("Active"))) {
+//
+//			return new ResponseEntity<>(userDetails, HttpStatus.OK);
+//
+//		} else {
+//			logger.info("No User Present");
+//			throw new InsuranceException("No User Present");
+//
+//		}
+//
 //	}
-//	@ApiOperation(value = "get User By Email", response = User.class)
-//	@GetMapping("/viewUserbyEmail/{email}")
-//    public ResponseEntity<User> viewUserbyEmail(@PathVariable(value="email") String email) {
-//        User user = service.viewUserbyEmail(email);
-//       System.out.println("user=" +user);
-//       ModelMapper modelmapper=new ModelMapper();
-//       modelmapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-//       
-//       ResponseModelOfUser createResponseModel=modelmapper.map(user,ResponseModelOfUser.class );
-//        //service.viewUserbyEmail(email)
-//       System.out.println(createResponseModel);
-////        if (user == null) {
-////            throw new InsuranceException("NOT FOUND");
-////        } else
-//            return ResponseEntity.status(HttpStatus.CREATED).body(user);
-//    }
-	
+
+	/**
+	 * This method return {@link Policy}
+	 * 
+	 * @return {@link Policy}
+	 * @throws NotFoundException
+	 */
+
+	@ApiOperation(value = "View Plans", response = Policy.class)
+	@GetMapping("/showAllPlans")
+	public ResponseEntity<List<Policy>> showAllPlans(HttpServletRequest request) throws NotFoundException {
+
+		String token = request.getHeader("token");
+		List<Policy> list = planService.getAllPlan(token);
+		logger.info("List Of Plans" + list);
+		return new ResponseEntity<>(list, HttpStatus.OK);
+
+	}
+
+	/**
+	 * This method return {@link Policy}
+	 * 
+	 * @param userId
+	 * @return {@link Policy}
+	 */
+
 	@ApiOperation(value = "get policy taken by user", response = User.class)
-	@GetMapping("/UserTakenPlan/{userId}")
-	public ResponseEntity<Plan> ViewEnrollPlan(@PathVariable("userId") int userId) throws InsuranceException {
-		User r=service.getEnrollmentDetails(userId);
-		if(r==null) {
-			throw new InsuranceException("No Policy Is being Taken");
-		}
-		Plan p=planService.getPlanByPlanId(r.getPlan().getPlanId());
-		return new ResponseEntity<>(p,HttpStatus.OK);
+	@GetMapping("/userTakenPlan/{userId}")
+	public ResponseEntity<Policy> ViewEnrollPlan(@PathVariable("userId") int userId, HttpServletRequest request)
+			throws InsuranceException {
+		String token = request.getHeader("token");
+		return planService.getPlanByPlanId(token, userId);
+
 	}
-	
-	
+
+	/**
+	 * This method return {@link List} of {@link User} with their respective
+	 * {@link Policy}
+	 * 
+	 * @param id : policyId
+	 * @return {@link List} of {@link User}
+	 */
 	@ApiOperation(value = "get user By user Id", response = User.class)
-	@GetMapping("/UserByUserId/{userId}")
-	public ResponseEntity<User> ViewUser(@PathVariable("userId") int userId) throws InsuranceException {
-		User r=service.getEnrollmentDetails(userId);
-		if(r==null) {
-			throw new InsuranceException("No Policy Is being Taken");
-		}
-		//Plan p=planService.getPlanByPlanId(r.getPlan().getPlanId());
-		return new ResponseEntity<>(r,HttpStatus.OK);
+	@GetMapping("/userByUserId/{userId}")
+
+	public User UserDetailsBuUserId(@PathVariable("userId") int userId,HttpServletRequest request) throws InsuranceException {
+		String token = request.getHeader("token");
+		return userService.getEnrollmentDetails(token,userId);
 	}
-	
-	
-	@PostMapping("/EnrollIntoPlane")
-    @ApiOperation("Enrolls a member in a benefit plan")
-    public ResponseEntity<EnrollmentRequest> createEnrollment( @RequestBody EnrollmentRequest request) throws Exception {
-       
-		Plan result=planService.findByPlaneId(request.getPlan().getPlanId());
-		System.out.println(result);
-		User users=service.findByUserId(request.getUser().getUserId());
-		System.out.println(users);
-		
-		
-        if(result==null) {
-        	throw new InsuranceException("No plan present");
-        }
-        if(users==null)
-		{
-        	throw new InsuranceException("No User present");
-        }
-        
-		EnrollmentRequest r=service.addEnrollmentDetails(request);
-		service.setPlanId(users,result);
-        
-		return new ResponseEntity<>(r,HttpStatus.OK);
-    }
-	
-	
-	
-	
-	
 
-    @DeleteMapping("/cancelPlanRequest/{EnrollmentId}")
-    @ApiOperation("Cancels a member's enrollment in a benefit plan")
-    public ResponseEntity<Integer> cancelEnrollment( @PathVariable int EnrollmentId) {
-    	EnrollmentRequest result=service.findByEnrollmentId(EnrollmentId);
-    	//User users=service.findByUserId(request.getUser().getUserId());
-    	if(result==null) {
-    		throw new Error("No Plan is present");
-        }
-    	service.DeleteByEnrollmentId(EnrollmentId);
-    	
-    	
-    	return new ResponseEntity<>(0,HttpStatus.OK);
-    }
-	
+	/**
+	 * This method return {@link EnrollmentRequest}
+	 * 
+	 * @param Enrollment Details
+	 * @return {@link EnrollmentRequest }
+	 * @throws InsuranceException
+	 */
+	@PostMapping("/enrollIntoPlane")
+	@ApiOperation("Enrolls a member in a benefit plan")
+	public ResponseEntity<EnrollmentRequest> createEnrollment(@RequestBody EnrollmentRequest enrollRequest,HttpServletRequest request)
+			throws InsuranceException {
+		String token = request.getHeader("token");
+		return userService.addEnrollmentDetails(token,enrollRequest);
+	}
 
-    
-    @GetMapping("/userDetails/{email:.+}/")
-   // @GetMapping("/userDetails/{email:.+}")
-    public User UserDetails(@PathVariable(value = "email") String email){
-    	User user=service.findUserByEmail(email.toString());
-    	System.out.println(user);
-    	return user;
-    }
-	
+	/**
+	 * This method cancel the enrollment
+	 * 
+	 * @param EnrollmentId
+	 * 
+	 * 
+	 */
+	@GetMapping("/userDetails/{email:.+}/")
+	// @GetMapping("/userDetails/{email:.+}")
+	public User UserDetails(@PathVariable(value = "email") String email,HttpServletRequest request) {
+		String token = request.getHeader("token");
+		User user = userService.findUserByEmail(token,email);
+		return user;
+	}
+
+	/**
+	 * This method return {@link ListofUser}
+	 * 
+	 * @return {@link ListofUser }
+	 * @throws NotFoundException
+	 * 
+	 */
+
+	@ApiOperation(value = "List of User", response = Policy.class)
+	@GetMapping("/listOfUser")
+	public ResponseEntity<List<User>> showAllUser(HttpServletRequest request) throws NotFoundException {
+		String token = request.getHeader("token");
+		return userService.listOfUser(token);
+
+	}
+
+	/**
+	 * This method update {@link UserDetails}
+	 * 
+	 * @param user
+	 * @return {@link UserDetails }
+	 * 
+	 */
+
+	@PutMapping("/updateUser")
+	public ResponseEntity<User> updateUser(@RequestBody User user,HttpServletRequest request) throws InsuranceException {
+		String token = request.getHeader("token");
+		logger.info("User Details Updated Successfully" + userService.updateUser(token,user));
+		return userService.updateUser(token,user);
+	}
 
 }

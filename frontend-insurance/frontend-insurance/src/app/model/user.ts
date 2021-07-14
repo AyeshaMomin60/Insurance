@@ -4,6 +4,8 @@ export class User {
         email:string;
         name:string;
         mobile:string;
+        role:string;
+        status:string;
     
         constructor(){}
     

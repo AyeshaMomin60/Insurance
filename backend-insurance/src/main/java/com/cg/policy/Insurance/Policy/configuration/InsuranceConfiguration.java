@@ -14,20 +14,20 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-@EnableSwagger2	
+@EnableSwagger2
 public class InsuranceConfiguration extends WebMvcConfigurationSupport {
-	
+
 	@Bean
 	public Docket version1() {
-	return new Docket(DocumentationType.SWAGGER_2).select()
-	.apis(RequestHandlerSelectors.basePackage("com.cg.policy.Insurance.Policy.controller")).paths(regex(".*" + ".*"))
-	.build().enable(true).groupName("InsurancePolicy")
-	.apiInfo(new ApiInfoBuilder().description("Insurance Policy")
-	.title("Insurance Application").build());
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.cg.policy.Insurance.Policy.controller"))
+				.paths(regex(".*" + ".*")).build().enable(true).groupName("InsurancePolicy")
+				.apiInfo(new ApiInfoBuilder().description("Insurance Policy").title("Insurance Application").build());
 	}
 
-  @Override
+	@Override
 	protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-	registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-	registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-	}}
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
+}

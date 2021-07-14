@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class UserService {
   
   allCustomer: any=[];
-  private baseUrl = 'http://localhost:8080/backend-insurance/api';
+  private baseUrl = 'http://localhost:8001/backend-insurance/api';
   
   constructor(private http: HttpClient) { } 
 
@@ -40,6 +40,14 @@ getUserId(email:string):Observable<any>{
 
   getUserByUserId(userId:number){
   return this.http.get(`${this.baseUrl}/UserByUserId/`+userId);
+}
+
+showAllUser(){
+  return this.http.get(`${this.baseUrl}/ListOfUser`);
+}
+updateUser(user:any){
+  return this.http.put(`${this.baseUrl}/updateUser`, user);
+
 }
 
   
